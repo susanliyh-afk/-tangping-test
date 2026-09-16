@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>如果明天不上班，你能躺多久？</title>
+  <style>
+    :root{
+      --bg:#FFF8F3;
+      --card:#FFFFFF;
+      --text:#2F2F2F;
+      --muted:#7A7472;
+      --line:#F0DED8;
+      --accent:#C8202F;
+      --accent2:#FBE8EA;
+      --soft:#FFF1EC;
+      --green:#E8F1EC;
+      --danger:#C8202F;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;line-height:1.55}
+    button{font:inherit}
+    .app{max-width:520px;margin:0 auto;min-height:100vh;padding:24px 18px 40px}
+    .screen{display:none;animation:fade .25s ease}
+    .screen.active{display:block}
+    @keyframes fade{from{opacity:.25;transform:translateY(4px)}to{opacity:1;transform:none}}
+    .hero{padding:34px 6px 20px}
+    .eyebrow{font-size:13px;color:var(--muted);letter-spacing:.08em;margin-bottom:18px}
+    h1{font-size:34px;line-height:1.15;margin:0 0 22px;letter-spacing:-.02em}
+    h2{font-size:26px;line-height:1.25;margin:0 0 18px}
+    h3{font-size:18px;margin:0 0 12px}
+    p{margin:0 0 14px}
+    .story{font-size:17px;color:#403d39}
+    .story strong{font-size:21px;display:block;margin-top:16px}
+    .cta{width:100%;border:0;border-radius:16px;background:var(--accent);color:white;padding:16px 18px;font-weight:700;font-size:17px;margin-top:22px}
+    .cta.secondary{background:#fff;color:#222;border:1px solid #d8d0c6}
+    .cta.ghost{background:transparent;color:#222;border:0;text-decoration:underline;padding:10px}
+    .micro{font-size:12px;color:var(--muted);text-align:center;margin-top:10px}
+    .progress-wrap{padding:8px 0 20px}
+    .progress-top{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:8px}
+    .progress{height:7px;background:#e7e0d8;border-radius:999px;overflow:hidden}
+    .progress>div{height:100%;background:#8c7f73;width:0;transition:width .25s ease}
+    .question{font-size:26px;line-height:1.3;margin:16px 0 22px;font-weight:800}
+    .options{display:grid;gap:12px}
+    .option{width:100%;text-align:left;border:1px solid #dfd6cc;background:var(--card);border-radius:16px;padding:15px 16px;font-size:16px;line-height:1.45}
+    .option:hover,.option.selected{border-color:#a99989;background:#f7f0e8}
+    .back{margin-top:22px;border:0;background:transparent;color:var(--muted);padding:8px 0}
+    .interlude{padding:68px 12px;text-align:center}
+    .interlude .big{font-size:28px;font-weight:800;margin-bottom:12px}
+    .dots{display:flex;gap:8px;justify-content:center;margin-top:22px}
+    .dot{width:8px;height:8px;border-radius:50%;background:#222;animation:pulse 1s infinite alternate}
+    .dot:nth-child(2){animation-delay:.15s}.dot:nth-child(3){animation-delay:.3s}
+    @keyframes pulse{to{opacity:.25;transform:translateY(-3px)}}
+    .result-top{text-align:center;padding:24px 4px 10px}
+    .result-top .label{font-size:14px;color:var(--muted)}
+    .duration{font-size:46px;line-height:1;font-weight:900;margin:12px 0 18px;letter-spacing:-.03em}
+    .badge{display:inline-block;padding:7px 12px;border:1px solid #222;border-radius:999px;font-size:13px;font-weight:700}
+    .score{font-size:15px;color:#555;margin-top:10px}
+    .summary{font-size:18px;font-weight:700;margin:20px auto;max-width:420px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin:16px 0}
+    .metric{margin:16px 0}
+    .metric-head{display:flex;justify-content:space-between;gap:12px;font-size:14px;margin-bottom:8px}
+    .bar{height:9px;background:#ebe5dc;border-radius:999px;overflow:hidden}.bar span{display:block;height:100%;background:#8c7f73;border-radius:999px}
+    .metric-note{font-size:12px;color:var(--muted);margin-top:6px}
+    .weak-title{font-size:14px;color:var(--muted);margin-bottom:6px}.weak-name{font-size:26px;font-weight:900;margin-bottom:12px}
+    .actions{display:grid;gap:10px;margin-top:18px}
+    .footnote{font-size:12px;color:var(--muted);margin-top:28px;padding-bottom:14px}
+    .tiny{font-size:12px;color:var(--muted)}
+
+    .share-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+    .share-row .cta{margin-top:0;font-size:15px;padding:14px 10px}
+    .qr-wrap{text-align:center;padding:10px 0 2px}.qr-wrap img{width:156px;height:156px;border-radius:12px;border:1px solid var(--line);background:#fff;padding:8px}.qr-title{font-weight:800;margin:8px 0 2px}.qr-url{font-size:11px;color:var(--muted);word-break:break-all}
+    .plan-hero{padding:22px 2px 8px}.plan-kicker{font-size:13px;color:var(--muted);margin-bottom:8px}.plan-title{font-size:32px;font-weight:900;line-height:1.15;margin-bottom:12px}.plan-sub{font-size:16px;color:#4b4843}
+    .plan-step{display:grid;grid-template-columns:34px 1fr;gap:12px;margin:18px 0}.plan-num{width:34px;height:34px;border-radius:50%;background:#8c7f73;color:#fff;display:grid;place-items:center;font-weight:800}.plan-step h3{margin:2px 0 6px}.formula{background:#f1ece4;border-radius:14px;padding:14px;font-size:14px;margin:12px 0}.formula strong{display:block;font-size:18px;margin-top:4px}
+    .share-modal{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;z-index:20;padding:24px 14px;overflow:auto}.share-modal.active{display:block}.share-modal-inner{max-width:420px;margin:0 auto;text-align:center}.share-modal img{width:100%;border-radius:18px;background:#fff}.share-modal .cta{margin-top:12px}.share-tip{color:#fff;font-size:13px;margin:10px 0}.close-share{position:fixed;right:16px;top:18px;width:38px;height:38px;border-radius:50%;border:0;background:#fff;font-size:22px}
+  
+    .cta{background:#7e7064;box-shadow:none}
+    .cta.secondary{background:#fffaf5;color:#5b524b;border-color:#ddd1c5}
+    .card{box-shadow:0 8px 28px rgba(93,75,58,.04)}
+    .badge{border-color:#b6a89c;color:#5b524b;background:#fffaf5}
+    .duration{color:#4a423c}
+
+    /* V4: 轻松传播版 */
+    body{background:linear-gradient(180deg,#FFF8F3 0%,#FFFDFB 55%,#F7FBF8 100%)}
+    .app{padding-top:18px}
+    .hero-v4{padding-top:16px;text-align:center}
+    .hero-v4 h1{font-size:38px;line-height:1.12;margin-top:12px;color:#2D2B2B}
+    .hero-sub{font-size:17px;line-height:1.65;color:#4B4747;margin:0 auto 10px}
+    .hero-note{font-size:13px;color:#8A7E7E;margin:0 auto 18px;max-width:330px}
+    .eyebrow{color:#B56A72;font-weight:700;letter-spacing:.04em}
+    .cta{background:var(--accent);box-shadow:0 10px 24px rgba(200,32,47,.16);border-radius:18px}
+    .cta.secondary{background:#fff;color:#A72B36;border-color:#F0CDD1;box-shadow:none}
+    .progress{background:#F3E1E3}.progress>div{background:#D84A58}
+    .option{border-color:#F0DEDA;background:#fff}.option:hover,.option.selected{border-color:#E9A7AF;background:#FFF0F2}
+    .dot{background:#D84A58}
+    .duration{color:#C8202F}
+    .badge{border-color:#F0B8BE;color:#B72634;background:#FFF0F2}
+    .score{color:#736A6A}
+    .card{border-color:#F1E4E0;box-shadow:0 8px 24px rgba(154,89,89,.05);background:rgba(255,255,255,.94)}
+    .bar{background:#F3E5E6}.bar span{background:linear-gradient(90deg,#D84A58,#E97E87)}
+    .weak-name{color:#B82835}
+    .plan-num{background:#C8202F}.formula{background:#FFF0F2}
+    .share-modal{background:rgba(47,36,38,.68)}
+    .share-tip{font-size:14px}
+
+    .mini-illustration{position:relative;height:150px;margin:4px auto 4px;max-width:340px}
+    .mini-illustration .sun{position:absolute;width:46px;height:46px;border-radius:50%;background:#FFD7A1;right:30px;top:10px}
+    .mini-illustration .sofa{position:absolute;left:54px;bottom:18px;width:220px;height:72px;border-radius:30px 30px 20px 20px;background:#F7D9DC;box-shadow:inset 0 -10px 0 rgba(200,32,47,.05)}
+    .mini-illustration .sofa:before{content:"";position:absolute;left:-16px;top:20px;width:34px;height:60px;border-radius:20px;background:#EFBFC5}
+    .mini-illustration .sofa:after{content:"";position:absolute;right:-16px;top:20px;width:34px;height:60px;border-radius:20px;background:#EFBFC5}
+    .mini-illustration .person{position:absolute;left:112px;bottom:48px;width:120px;height:70px;transform:rotate(-6deg)}
+    .mini-illustration .head{position:absolute;left:5px;top:6px;width:32px;height:32px;border-radius:50%;background:#F3C7A9}
+    .mini-illustration .body{position:absolute;left:30px;top:22px;width:65px;height:30px;border-radius:18px;background:#C8202F}
+    .mini-illustration .leg{position:absolute;top:44px;width:58px;height:12px;border-radius:12px;background:#7A8F83}
+    .mini-illustration .leg1{left:64px;transform:rotate(12deg)} .mini-illustration .leg2{left:47px;top:55px;transform:rotate(-8deg)}
+    .mini-illustration .cup{position:absolute;right:55px;bottom:8px;width:24px;height:28px;border-radius:4px 4px 10px 10px;background:#F6B252}
+    .mini-illustration .cup:after{content:"";position:absolute;right:-9px;top:7px;width:12px;height:10px;border:3px solid #F6B252;border-left:0;border-radius:0 8px 8px 0}
+    .mini-illustration .plant{position:absolute;left:18px;bottom:8px;width:16px;height:54px;background:#7BA88E;border-radius:8px}
+    .mini-illustration .plant:before,.mini-illustration .plant:after{content:"";position:absolute;width:34px;height:16px;border-radius:100% 0 100% 0;background:#9FC5AE;left:-22px}
+    .mini-illustration .plant:before{top:8px;transform:rotate(25deg)} .mini-illustration .plant:after{top:26px;left:7px;transform:scaleX(-1) rotate(25deg)}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <section id="home" class="screen active">
+    <div class="hero hero-v4">
+      <div class="eyebrow">家庭底气测试 · 10道题 · 约2分钟</div>
+      <div class="mini-illustration" aria-hidden="true">
+        <div class="sun"></div><div class="plant"></div><div class="sofa"></div>
+        <div class="person"><span class="head"></span><span class="body"></span><span class="leg leg1"></span><span class="leg leg2"></span></div>
+        <div class="cup"></div>
+      </div>
+      <h1>如果明天不上班，<br>你能躺多久？</h1>
+      <p class="hero-sub">10道题，2分钟。<br>测测你家的现金流、保障和底气。</p>
+      <p class="hero-note">不是鼓励躺平，只是看看你有没有停下来的底气。</p>
+      <button class="cta" id="startBtn">开始测试</button>
+      <div class="micro">不用留手机号</div>
+    </div>
+  </section>
+
+  <section id="quiz" class="screen">
+    <div class="progress-wrap">
+      <div class="progress-top"><span id="qCount">1 / 10</span><span>家庭底气测试</span></div>
+      <div class="progress"><div id="progressBar"></div></div>
+    </div>
+    <div class="question" id="questionText"></div>
+    <div class="options" id="options"></div>
+    <button class="back" id="backBtn">← 上一题</button>
+  </section>
+
+  <section id="loading" class="screen">
+    <div class="interlude">
+      <div class="big">正在计算你的“躺平续航能力”……</div>
+      <p>钱包抗不抗打 ✓</p>
+      <p>家里扛不扛事 ✓</p>
+      <p>生病慌不慌 ✓</p>
+      <p>未来有没有谱 ✓</p>
+      <p>人生选择权 ✓</p>
+      <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+    </div>
+  </section>
+
+  <section id="result" class="screen">
+    <div class="result-top">
+      <div class="label">如果明天不上班</div>
+      <div class="duration" id="durationText"></div>
+      <div class="badge" id="personaBadge"></div>
+      <div class="score">家庭底气值 <strong id="scoreText"></strong></div>
+      <div class="summary" id="summaryText"></div>
+    </div>
+
+    <div class="card">
+      <h3>我的5维家庭底气</h3>
+      <div id="metrics"></div>
+    </div>
+
+    <div class="card">
+      <div class="weak-title">到底是什么，让你不敢躺？</div>
+      <div class="weak-name" id="weakName"></div>
+      <div id="weakCopy"></div>
+    </div>
+
+    <div class="card">
+      <h3>什么在拖累你躺平？</h3>
+      <div id="nextSteps"></div>
+      <div class="actions">
+        <button class="cta" id="detailBtn">什么在拖累你躺平？</button>
+        <div class="share-row">
+          <button class="cta secondary" id="shareBtn">生成我的测试卡</button>
+          <button class="cta secondary" id="retryBtn">重新测一次</button>
+        </div>
+      </div>
+      <div class="qr-wrap">
+        <img id="qrImg" alt="测评二维码" />
+        <div class="qr-title">扫码测测：如果明天不上班，你能躺多久？</div>
+        <div class="qr-url" id="qrUrl"></div>
+      </div>
+    </div>
+
+    <div class="footnote">本测试用于帮助梳理家庭现金流、保障、长期支出和生活选择权，不构成投资或保险配置建议。</div>
+  </section>
+
+  <section id="plan" class="screen">
+    <button class="back" id="planBack">← 返回结果</button>
+    <div class="plan-hero">
+      <div class="plan-kicker">多躺1年行动单</div>
+      <div class="plan-title" id="planTitle"></div>
+      <div class="plan-sub" id="planSub"></div>
+    </div>
+    <div class="card">
+      <h3>先算出你的1年自由金</h3>
+      <div class="formula">每月必须支出 × 12个月<strong>＝ 1年基础自由金</strong></div>
+      <p class="tiny">只算必须支出：房贷/房租、基本生活、孩子、赡养、社保和必要医疗。</p>
+    </div>
+    <div class="card" id="planSteps"></div>
+    <div class="card">
+      <h3>做到这一步，就是真的多躺1年</h3>
+      <p>这1年的生活费能独立存在，不会因为一次大病、停工或临时大额支出被迅速挪走。</p>
+      <p><strong>现金缓冲 + 风险保障 + 长期资金分开</strong>，才是真正增加了1年的选择权。</p>
+    </div>
+    <button class="cta secondary" id="planBackBottom">返回我的测试结果</button>
+  </section>
+</div>
+<div class="share-modal" id="shareModal"><button class="close-share" id="closeShare">×</button><div class="share-modal-inner"><div class="share-tip">长按图片保存到相册，再分享给朋友</div><img id="shareImg" alt="测试结果分享图"><button class="cta" id="nativeShareBtn">分享这张结果图</button></div></div>
+<script>
+const questions = [
+ {q:'假设你从下周一开始不上班，工资暂停。你觉得家里的钱，能让你安心多久？', opts:[['A','3个月都悬'],['B','3—6个月问题不大'],['C','半年到1年还能稳住'],['D','1—3年都可以安排'],['E','3年以上，暂时不慌']]},
+ {q:'如果你不上班，家里还有几路收入能继续进账？', opts:[['A','基本没有，主要靠我一个人'],['B','有另一份收入，但金额差很多'],['C','两个人都能赚钱，压力没那么集中'],['D','除了工资，还有比较稳定的其他收入']]},
+ {q:'就算你不上班，每个月哪些钱也必须照交？', opts:[['A','房贷、孩子、父母，一样都不能停'],['B','有一些固定支出，但还在承受范围内'],['C','固定压力不算大'],['D','基本没什么长期包袱']]},
+ {q:'假设你刚开始躺，家里突然有人生了一场大病。你的第一反应更像哪一种？', opts:[['A','完了，这得花多少钱'],['B','钱应该拿得出来，但估计要伤筋动骨'],['C','有保险、有储蓄，心里有点底'],['D','钱和医疗资源基本都有安排，我更关注怎么治']]},
+ {q:'说到家里的保险，你属于哪一种？', opts:[['A','基本没配，先靠身体硬扛'],['B','买过一些，但现在问我保什么，我得翻半天'],['C','医疗、重疾这些大概都配了'],['D','家里谁保了什么、缺什么，我基本清楚']]},
+ {q:'如果真的让你休息一年，你最担心什么？', opts:[['A','没工资以后，现金流顶不住'],['B','房贷、孩子、父母这些责任停不了'],['C','万一生病，医疗费用不好扛'],['D','现在休息可以，但养老和以后怎么办'],['E','说实话，我还真没特别担心的']]},
+ {q:'未来10年，你家有没有几笔“早晚要花的大钱”？', opts:[['A','有，而且感觉都在排队'],['B','有1—2件，已经开始准备'],['C','大头基本都想过，也有安排'],['D','暂时没有特别大的刚性支出']]},
+ {q:'关于退休这件事，你现在是什么状态？', opts:[['A','先活到退休再说'],['B','想过，但完全不知道要多少钱'],['C','已经开始慢慢存了'],['D','大概什么时候退、每月花多少、钱怎么来，基本有谱']]},
+ {q:'如果现在手里有一笔5—10年都不用的钱，你一般会怎么放？', opts:[['A','先趴账户里，想到再说'],['B','主要还是存款，安全最重要'],['C','会做一些长期安排'],['D','已经有比较稳定的资产配置方式']]},
+ {q:'最后一道，凭第一感觉回答：如果明天真的不用上班了，你敢吗？', opts:[['A','不敢，我光想想就慌'],['B','几个月可以，再久就不行'],['C','休息一年左右问题不大'],['D','真要换一种生活，我可以认真考虑'],['E','我现在已经有一点“想不干就不干”的底气']]}
+];
+const scoreMap = [
+ {A:0,B:5,C:10,D:15,E:20}, {A:2,B:5,C:8,D:10}, {A:2,B:5,C:8,D:10},
+ {A:0,B:5,C:10,D:15}, {A:0,B:3,C:7,D:10}, {A:0,B:1,C:2,D:3,E:5},
+ {A:0,B:4,C:8,D:10}, {A:0,B:3,C:7,D:10}, {A:0,B:2,C:4,D:5}, {A:0,B:2,C:3,D:4,E:5}
+];
+const maxScore=[20,10,10,15,10,5,10,10,5,5], minScore=[0,2,2,0,0,0,0,0,0,0];
+let idx=0, answers=Array(10).fill(null);
+const $=s=>document.querySelector(s);
+function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));$(id).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+function renderQ(){
+ $('#qCount').textContent=`${idx+1} / 10`; $('#progressBar').style.width=`${(idx/10)*100}%`;
+ $('#questionText').textContent=questions[idx].q; $('#options').innerHTML='';
+ questions[idx].opts.forEach(([key,text])=>{const b=document.createElement('button');b.className='option'+(answers[idx]===key?' selected':'');b.textContent=`${key}. ${text}`;b.onclick=()=>{answers[idx]=key;if(idx<9){idx++;renderQ()}else{compute()}};$('#options').appendChild(b)});
+ $('#backBtn').style.visibility=idx===0?'hidden':'visible';
+}
+function norm(qi){const s=scoreMap[qi][answers[qi]], mn=minScore[qi], mx=maxScore[qi]; return ((s-mn)/(mx-mn))*100}
+function weighted(items){return Math.round(items.reduce((a,[qi,w])=>a+norm(qi)*w,0));}
+function persona(score){
+ if(score<=19)return ['社畜续命型','今天先上班，明天再自由。'];
+ if(score<=34)return ['月底清醒型','梦想很自由，钱包很清醒。'];
+ if(score<=49)return ['短休选手','假可以请，班暂时还得上。'];
+ if(score<=59)return ['仰卧起坐玩家','能躺一会儿，但迟早还得坐起来。'];
+ if(score<=69)return ['有点底气型','偶尔停一下，世界不会塌。'];
+ if(score<=79)return ['半自由玩家','工作开始从必答题变成选择题。'];
+ if(score<=89)return ['FIRE候选人','离“不为工资工作”越来越近。'];
+ return ['FIRE玩家','上班是选择，不是生存条件。'];
+}
+function duration(){
+ const base={A:0,B:1,C:2,D:3,E:4}[answers[0]];
+ let R=0;
+ if(answers[1]==='A')R++;
+ if(answers[2]==='A')R++;
+ if(['A','B'].includes(answers[3]))R++;
+ if(['A','B'].includes(answers[4]))R++;
+ if(answers[6]==='A')R++;
+ let d=base;
+ if(R>=4)d-=2; else if(R>=2)d-=1;
+ if(answers[0]==='A')d=0;
+ if(answers[0]==='E'&&R>=1)d=Math.min(d,3);
+ d=Math.max(0,Math.min(4,d));
+ return ['0—3个月','3—6个月','6—12个月','1—3年','3年以上'][d];
+}
+const weakCopy={
+ '钱包抗打指数':['不是不能休息，是钱包还没准备好。','现金缓冲还不够厚，所以你仍然比较依赖持续收入。',['先补足应急金','梳理固定支出','给未来大额支出单独留位置']],
+ '家庭扛事指数':['真正停不下来的，可能不是你，是责任。','家庭责任和收入来源比较集中，所以你很难真正停下来。',['分散收入来源','评估家庭责任缺口','给主要收入者做风险缓冲']],
+ '生病不慌指数':['钱可以慢慢赚，大病不会提前预约。','日常现金流不差，但一次较大的健康支出，可能会吃掉你的休息计划。',['看清全家现有医疗、重疾保障','算一次大病现金缺口','把治病的钱和长期储蓄的钱分开']],
+ '未来有谱指数':['今天可以躺，未来的钱还没完全排好队。','眼前不紧张，但教育、养老或未来大额支出还没有完全排好队。',['列出未来10年大额支出','估算退休现金流需求','把短期钱和长期钱分开']],
+ '人生选择权':['账面看着还行，心里还不敢停。','账面可能已经不差，但你还缺一个能让自己安心停下来的明确数字。',['定义自己的“够用”数字','测算停工一年需要多少钱','明确想换来的生活选择']]
+};
+let latestResult=null;
+const testUrl='https://susanliyh-afk.github.io/-tangping-test/';
+const qrData='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZoAAAGaAQAAAAAefbjOAAAC/klEQVR4nO2czY3bMBBG30QC9kh34FLkDlJTSkoHUikuIIB4NCDhy4E/kncXCDZOLFseHgxY4oNIaDzzzZC0iS+34dvXGXDIIYcccsghh/YJWW4twGwM1sJgLflaLB1OmwzPoftDnSRpJJtApwm6ESBM2IlGkqRr6H7Dc+j+UKwOIEzYKbbYKVxMfTRTTzGVrYbn0HZQd34TMBsks5j+15McekioffddRNBwAIajsO7n+x5/+ySHngMq7zsIiADhYuo0txq+z62ITXIS60rWg8/JoVsg1oqRRnTjZx+lQydJ/YPPyaFboOQjVg5gOGAizkYSE2FC1x7i4efk0C1Q9hE5+yxOARqpDxPpWvpaOruP2DWUX3IyBk1II6hf7o7rwOIW8TLQcLyY+thip3JHfZAYDo0gtqzExJPMyaHbss9GlhIOphbCrxaiQScwwsUYDhsMz6GNIDulkpRZdgpAEpV9NKM7t1c5yVPMyaHbdISmFCbyiw9ZWxR5WbSFZ5+7h65k40iSC5ImIGTbWO66stw/VHMNKLlGU1OPkpb2ySwauY/YP1R+9qEsf3eaUoTIQWRsBGFibSAPPieHboFqhWpKsaIEh2mVbqpPFSr3Ea8AVR1R1zCShCiOQtVUenBl+QJQjRo1zaj7peq+qlLZxi3ihaDYYqdYNtQNhzmVMBmOkn4cs9/YbHgO3Q0qOmJsSlGCJtcj+iAtoaN0cR+xc6hWsWcT8YB1mk3EdqI7GyKMAI0sLZPfeXgO3R269hGlUlnLE+lGj9csXwb6kGtUZbnIy9yziE+3iF1D6LqlsnU9qrEuTo1ej3gdaDnTpZ7ZgFyXoju3pP0R+doWw3Noi5plkRDLGkbdS7eEDo8arwMtZ7qiWYkVF7MTjRgsX8tdnmRODv0jKMcK9fFN6sPFSnGq8R0zrwjldY2LMRwvBvGtntfIAuP55uTQV9pHHTGt9meXVY/sI1xH7B/65EwX5LXP1erXsgrqFrFzyPTnPu+b/zOZQw455JBDDjkE8Btjorp+o5WDdQAAAABJRU5ErkJggg==';
+const planCopy={
+ '钱包抗打指数':{title:'先把“1年自由金”攒出来',sub:'你现在最直接的限制，是现金缓冲还不够厚。先不追求复杂配置，先把“没有工资也能生活”的时间买回来。',steps:[['算清每月最低生活成本','把最近3个月的必要支出取平均，得到你的“最低月成本”。'],['先做到3—6个月，再冲12个月','不要一口气追求1年，先把第一阶段缓冲做厚，再逐步增加。'],['把自由金和投资的钱分开','这笔钱的任务是“随时能用”，不要让它承担高波动或长期锁定任务。']]},
+ '家庭扛事指数':{title:'先把“一停工，全家都受影响”拆开',sub:'你缺的未必只是钱，而是家庭收入和责任太集中。多躺1年，需要让这个家不再只靠一个人一直往前跑。',steps:[['列出不能停的家庭责任','房贷、孩子、父母、社保分别需要多少钱、还要持续几年。'],['给主要收入者留出替代方案','至少准备6—12个月缓冲，并明确另一份收入或备用现金流来自哪里。'],['把大责任和日常开销分开','长期责任单独准备，不要让一年生活费同时承担房贷、教育和赡养三种任务。']]},
+ '生病不慌指数':{title:'先防止“一场病，把1年自由金打回原形”',sub:'你的现金流未必最弱，但健康风险可能会吃掉本来准备休息的钱。多躺1年之前，先让治病的钱有自己的来源。',steps:[['把全家已有保障列成一张表','医疗、重疾、寿险分别看“有没有、保多少、到什么时候”。'],['算一次大病现金缺口','除了医疗费，还要考虑康复、停工和家庭照护期间的收入损失。'],['把治病的钱和长期储蓄隔离','保险负责转移大额不确定风险，现金储备负责短期生活，两笔钱不要互相替代。']]},
+ '未来有谱指数':{title:'把“今天能躺”延长成“未来也能躺”',sub:'眼前可能不紧张，但未来的大钱还没有排好队。多躺1年，要避免休息一年之后，教育、养老或大额支出突然接管你的现金流。',steps:[['列出未来10年三笔最大支出','只写金额、时间和刚性程度，不需要一开始就选产品。'],['把3年内和10年以上的钱分开','短期钱优先流动性，长期钱才有条件追求复利。'],['给退休设一个最低版本','先算“退休后每月最低需要多少钱”，再逐步升级生活品质版本。']]},
+ '人生选择权':{title:'先给自己一个“可以停”的明确数字',sub:'你的账面条件可能已经不差，但心理上仍然不敢停。多躺1年，需要把模糊焦虑变成一个可以计算的数字。',steps:[['定义你的“够用生活”','如果不用上班，每月最低需要多少钱才能过得安心？'],['算出12个月停工成本','必要支出×12，再加一笔意外缓冲，就是你的第一版目标。'],['提前设计这一年拿来做什么','休息、转型、创业、陪家人都可以。目标越清楚，“不上班”越不像失控。']]}
+};
+function compute(){
+ show('#loading');
+ const raw=answers.reduce((s,a,i)=>s+scoreMap[i][a],0);
+ const score=Math.round(((raw-4)/96)*100);
+ const metrics={
+  '钱包抗打指数':weighted([[0,.5],[2,.25],[6,.25]]),
+  '家庭扛事指数':weighted([[1,.4],[2,.3],[5,.3]]),
+  '生病不慌指数':weighted([[3,.6],[4,.4]]),
+  '未来有谱指数':weighted([[6,.35],[7,.4],[8,.25]]),
+  '人生选择权':weighted([[0,.5],[5,.2],[9,.3]])
+ };
+ setTimeout(()=>renderResult(score,metrics),1500);
+}
+function stars(v){const n=v<=19?1:v<=39?2:v<=59?3:v<=79?4:5;return '★'.repeat(n)+'☆'.repeat(5-n)}
+function renderResult(score,metrics){
+ const [p,summary]=persona(score); $('#durationText').textContent=duration(); $('#personaBadge').textContent=p; $('#scoreText').textContent=score; $('#summaryText').textContent=summary;
+ const notes={
+ '钱包抗打指数':'现金流、固定支出和未来大额支出。','家庭扛事指数':'收入集中度和家庭责任压力。','生病不慌指数':'健康保障和医疗费用承受力。','未来有谱指数':'养老、大额支出和长期资金安排。','人生选择权':'停工、转型和休息的自由度。'};
+ $('#metrics').innerHTML=''; Object.entries(metrics).forEach(([k,v])=>{const d=document.createElement('div');d.className='metric';d.innerHTML=`<div class="metric-head"><strong>${k}</strong><span>${v}分</span></div><div class="bar"><span style="width:${v}%"></span></div><div class="metric-note">${notes[k]}</div>`;$('#metrics').appendChild(d)});
+ const order=['生病不慌指数','家庭扛事指数','钱包抗打指数','未来有谱指数','人生选择权']; let weak=order[0]; order.forEach(k=>{if(metrics[k]<metrics[weak])weak=k});
+ $('#weakName').textContent=`${weak} · ${metrics[weak]}分`; const c=weakCopy[weak]; $('#weakCopy').innerHTML=`<h3>${c[0]}</h3><p>${c[1]}</p>`; $('#nextSteps').innerHTML=`<p>① ${c[2][0]}</p><p>② ${c[2][1]}</p><p>③ ${c[2][2]}</p>`;
+ latestResult={score,metrics,persona:p,summary,duration:duration(),weak};
+ $('#qrImg').src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZoAAAGaAQAAAAAefbjOAAAC/klEQVR4nO2czY3bMBBG30QC9kh34FLkDlJTSkoHUikuIIB4NCDhy4E/kncXCDZOLFseHgxY4oNIaDzzzZC0iS+34dvXGXDIIYcccsghh/YJWW4twGwM1sJgLflaLB1OmwzPoftDnSRpJJtApwm6ESBM2IlGkqRr6H7Dc+j+UKwOIEzYKbbYKVxMfTRTTzGVrYbn0HZQd34TMBsks5j+15McekioffddRNBwAIajsO7n+x5/+ySHngMq7zsIiADhYuo0txq+z62ITXIS60rWg8/JoVsg1oqRRnTjZx+lQydJ/YPPyaFboOQjVg5gOGAizkYSE2FC1x7i4efk0C1Q9hE5+yxOARqpDxPpWvpaOruP2DWUX3IyBk1II6hf7o7rwOIW8TLQcLyY+thip3JHfZAYDo0gtqzExJPMyaHbss9GlhIOphbCrxaiQScwwsUYDhsMz6GNIDulkpRZdgpAEpV9NKM7t1c5yVPMyaHbdISmFCbyiw9ZWxR5WbSFZ5+7h65k40iSC5ImIGTbWO66stw/VHMNKLlGU1OPkpb2ySwauY/YP1R+9qEsf3eaUoTIQWRsBGFibSAPPieHboFqhWpKsaIEh2mVbqpPFSr3Ea8AVR1R1zCShCiOQtVUenBl+QJQjRo1zaj7peq+qlLZxi3ihaDYYqdYNtQNhzmVMBmOkn4cs9/YbHgO3Q0qOmJsSlGCJtcj+iAtoaN0cR+xc6hWsWcT8YB1mk3EdqI7GyKMAI0sLZPfeXgO3R269hGlUlnLE+lGj9csXwb6kGtUZbnIy9yziE+3iF1D6LqlsnU9qrEuTo1ej3gdaDnTpZ7ZgFyXoju3pP0R+doWw3Noi5plkRDLGkbdS7eEDo8arwMtZ7qiWYkVF7MTjRgsX8tdnmRODv0jKMcK9fFN6sPFSnGq8R0zrwjldY2LMRwvBvGtntfIAuP55uTQV9pHHTGt9meXVY/sI1xH7B/65EwX5LXP1erXsgrqFrFzyPTnPu+b/zOZQw455JBDDjkE8Btjorp+o5WDdQAAAABJRU5ErkJggg==';
+ $('#qrUrl').textContent=testUrl;
+ show('#result');
+}
+$('#startBtn').onclick=()=>{show('#quiz');renderQ()};
+$('#backBtn').onclick=()=>{if(idx>0){idx--;renderQ()}};
+$('#retryBtn').onclick=()=>{idx=0;answers=Array(10).fill(null);show('#home')};
+$('#detailBtn').onclick=()=>{if(!latestResult)return;const x=planCopy[latestResult.weak];$('#planTitle').textContent=x.title;$('#planSub').textContent=x.sub;$('#planSteps').innerHTML=x.steps.map((it,i)=>`<div class="plan-step"><div class="plan-num">${i+1}</div><div><h3>${it[0]}</h3><p>${it[1]}</p></div></div>`).join('');show('#plan')};
+$('#planBack').onclick=$('#planBackBottom').onclick=()=>show('#result');
+function wrapText(ctx,text,x,y,maxWidth,lineHeight,maxLines=3){let chars=[...text],line='',lines=[];for(const ch of chars){let test=line+ch;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=ch}else line=test}if(line)lines.push(line);lines=lines.slice(0,maxLines);lines.forEach((ln,i)=>ctx.fillText(ln,x,y+i*lineHeight));return y+lines.length*lineHeight}
+async function makeShareImage(){
+ if(!latestResult)return null;
+ const c=document.createElement('canvas'); c.width=900; c.height=1500; const ctx=c.getContext('2d');
+ ctx.fillStyle='#FFF8F3'; ctx.fillRect(0,0,c.width,c.height);
+ // 顶部红色小标签
+ ctx.fillStyle='#FBE8EA'; roundRect(ctx,54,52,260,54,27,true,false);
+ ctx.fillStyle='#B72634'; ctx.font='700 24px -apple-system, PingFang SC, sans-serif'; ctx.fillText('我的躺平续航测试',82,87);
+ ctx.fillStyle='#2F2F2F'; ctx.font='800 34px -apple-system, PingFang SC, sans-serif'; ctx.fillText('如果明天不上班，你能躺多久？',54,155);
+ ctx.fillStyle='#C8202F'; ctx.font='900 82px -apple-system, PingFang SC, sans-serif'; ctx.fillText(latestResult.duration,54,260);
+ ctx.fillStyle='#2F2F2F'; ctx.font='700 30px -apple-system, PingFang SC, sans-serif'; ctx.fillText(latestResult.persona+'  ·  '+latestResult.score+'分',54,320);
+ ctx.fillStyle='#716B6B'; ctx.font='500 25px -apple-system, PingFang SC, sans-serif'; wrapText(ctx,latestResult.summary,54,370,790,38,2);
+ let y=470;
+ ctx.fillStyle='#2F2F2F'; ctx.font='800 30px -apple-system, PingFang SC, sans-serif'; ctx.fillText('我的5维家庭底气',54,y); y+=48;
+ Object.entries(latestResult.metrics).forEach(([k,v])=>{
+   ctx.font='700 24px -apple-system, PingFang SC, sans-serif'; ctx.fillStyle='#393636'; ctx.fillText(k,54,y);
+   ctx.textAlign='right'; ctx.fillStyle='#B72634'; ctx.fillText(v+'分',844,y); ctx.textAlign='left';
+   ctx.fillStyle='#F3E4E6'; roundRect(ctx,54,y+18,790,14,7,true,false);
+   ctx.fillStyle='#D84A58'; roundRect(ctx,54,y+18,790*v/100,14,7,true,false); y+=91;
+ });
+ ctx.fillStyle='#FFFFFF'; roundRect(ctx,44,y-8,812,190,28,true,false);
+ ctx.fillStyle='#9A7479'; ctx.font='600 22px -apple-system, PingFang SC, sans-serif'; ctx.fillText('什么在拖累我躺平？',72,y+34);
+ ctx.fillStyle='#B72634'; ctx.font='900 36px -apple-system, PingFang SC, sans-serif'; ctx.fillText(latestResult.weak+' · '+latestResult.metrics[latestResult.weak]+'分',72,y+86);
+ ctx.fillStyle='#5F5959'; ctx.font='500 23px -apple-system, PingFang SC, sans-serif'; ctx.fillText('先补这一块，能更快增加停下来的底气。',72,y+132);
+ // 底部二维码区
+ ctx.fillStyle='#FFF0F2'; roundRect(ctx,44,1260,812,180,28,true,false);
+ ctx.fillStyle='#2F2F2F'; ctx.font='800 27px -apple-system, PingFang SC, sans-serif'; ctx.fillText('你能躺多久？',72,1318);
+ ctx.fillStyle='#6D6666'; ctx.font='500 22px -apple-system, PingFang SC, sans-serif'; ctx.fillText('扫码测一测自己的家庭底气',72,1362);
+ const qr=await loadImg(qrData); ctx.drawImage(qr,680,1280,130,130);
+ return c.toDataURL('image/png');
+}
+function loadImg(src){return new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src=src;})}
+function roundRect(ctx,x,y,w,h,r,fill,stroke){if(w<2*r)r=w/2;if(h<2*r)r=h/2;ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();if(fill)ctx.fill();if(stroke)ctx.stroke()}
+$('#shareBtn').onclick=async()=>{const url=await makeShareImage();if(!url)return;$('#shareImg').src=url;$('#shareModal').classList.add('active')};
+$('#closeShare').onclick=()=>$('#shareModal').classList.remove('active');
+$('#nativeShareBtn').onclick=async()=>{if(!$('#shareImg').src)return;try{const r=await fetch($('#shareImg').src),blob=await r.blob(),file=new File([blob],'我的躺平续航测试.png',{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'如果明天不上班，你能躺多久？'})}else{alert('请长按上方图片保存到相册后分享。')}}catch(e){alert('请长按上方图片保存到相册后分享。')}};
+</script>
+</body>
+</html>
